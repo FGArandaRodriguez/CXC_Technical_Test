@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, validator
 from typing import List, Optional
 from datetime import datetime
 
@@ -34,6 +34,12 @@ class ArticleBase(BaseModel):
     author: str = Field(..., min_length=3, max_length=150)
     tags: Optional[List[str]] = Field(None, description="Lista de tags para el artículo")
     published_at: Optional[datetime] = None
+
+    @validator("tags", pre=True)
+    def split_tags(cls, v):
+        if isinstance(v, str):
+            return v.split(";")  # convierte 'python;fastapi' -> ['python', 'fastapi']
+        return v
 
 class ArticleCreate(ArticleBase):
     pass
