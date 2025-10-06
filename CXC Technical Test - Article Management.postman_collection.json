@@ -1,0 +1,239 @@
+{
+	"info": {
+		"_postman_id": "93fc4e02-7389-4f9f-af2d-65dcf3411040",
+		"name": "CXC Technical Test - Article Management",
+		"description": "Colección de endpoints para el servicio de gestión de artículos (FastAPI + PostgreSQL + Redis).",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "15301510",
+		"_collection_link": "https://www.postman.com/matt-pro/workspace/cxc-technical-test-franklin-aranda/collection/15301510-93fc4e02-7389-4f9f-af2d-65dcf3411040?action=share&source=collection_link&creator=15301510"
+	},
+	"item": [
+		{
+			"name": "🩺 Health",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "x-api-key",
+						"value": "{{api_key}}"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/health",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"health"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "📰 Articles - Create",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "X-API-Key",
+						"value": "{{api_key}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"title\": \"Artículo de ejemplo 1\",\n  \"body\": \"Este es el contenido del artículo.\",\n  \"author\": \"Giovanni\",\n  \"tags\": [\"python\", \"fastapi\"],\n  \"published_at\": \"2025-10-06T00:00:00Z\"\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/api/v1/articles/",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"articles",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "📰 Articles - List",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "X-API-Key",
+						"value": "{{api_key}}"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/v1/articles?skip=0&limit=10",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"articles"
+					],
+					"query": [
+						{
+							"key": "skip",
+							"value": "0"
+						},
+						{
+							"key": "limit",
+							"value": "10"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "📰 Articles - Get by ID",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "X-API-Key",
+						"value": "{{api_key}}"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/v1/articles/{{article_id}}",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"articles",
+						"{{article_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "📰 Articles - Update",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "X-API-Key",
+						"value": "{{api_key}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"title\": \"Título actualizado\",\n  \"body\": \"Contenido actualizado.\"\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/api/v1/articles/{{article_id}}",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"articles",
+						"{{article_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "📰 Articles - Delete",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "X-API-Key",
+						"value": "{{api_key}}"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/v1/articles/{{article_id}}",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"articles",
+						"{{article_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "🔍 Articles - Search",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "X-API-Key",
+						"value": "{{api_key}}"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/v1/articles/?search=actu",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"articles",
+						""
+					],
+					"query": [
+						{
+							"key": "search",
+							"value": "actu"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "📘 OpenAPI JSON",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "X-API-Key",
+						"value": "{{api_key}}"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/v1/openapi.json",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"openapi.json"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

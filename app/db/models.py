@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Text, DateTime, func, UniqueConstraint, Index
+from sqlalchemy import Column, Integer, String, Text, DateTime, func, UniqueConstraint, Index, text
 from app.db.base import Base
 from datetime import datetime
 
@@ -31,17 +31,16 @@ class Article(Base):
     """
     __tablename__ = "articles"
 
-    id = Column(Integer, primary_key=True, index=True) [cite: 90]
-    title = Column(String(255), nullable=False) [cite: 91]
-    author = Column(String(150), nullable=False) [cite: 91, 94]
-    body = Column(Text, nullable=False) [cite: 92]
-    tags = Column(String, nullable=True) # Almacenado como string separado por ';' 
-    published_at = Column(DateTime, nullable=True) [cite: 95]
-    created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False) [cite: 96]
-    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False) [cite: 96]
-
+    id = Column(Integer, primary_key=True, index=True)
+    title = Column(String(255), nullable=False)
+    author = Column(String(150), nullable=False)
+    body = Column(Text, nullable=False)
+    tags = Column(String, nullable=True)
+    published_at = Column(DateTime, nullable=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
+    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False)
     __table_args__ = (
-        UniqueConstraint("title", "author", name="uix_title_author"), [cite: 91, 97]
-        Index("ix_articles_author", "author"), [cite: 97]
-        Index("ix_articles_published_at", "published_at"), [cite: 97]
+        UniqueConstraint("title", "author", name="uix_title_author"),
+        Index("ix_articles_author", "author"),
+        Index("ix_articles_published_at", "published_at"),
     )
