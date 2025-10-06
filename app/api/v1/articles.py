@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Query, status, Response
+from fastapi import APIRouter, Depends, Query, status, Response, HTTPException
 from sqlalchemy.orm import Session
 from typing import List, Optional
 from app.api import deps
@@ -6,14 +6,11 @@ from app.services.article_service import ArticleService
 from app.repositories.article_repository import ArticleRepository
 from app.schemas.article_schema import ArticleCreate, ArticleUpdate, ArticleOut
 
-router = APIRouter()
+router = APIRouter(prefix="/articles", tags=["Articles"])
 
 
 @router.post("/", response_model=ArticleOut, status_code=status.HTTP_201_CREATED, summary="Create a new article")
-def create_article(
-    payload: ArticleCreate,
-    db: Session = Depends(deps.get_db)
-):
+def create_article(payload: ArticleCreate, db: Session = Depends(deps.get_db)):
     """
     Create a new article.
 
@@ -33,10 +30,7 @@ def create_article(
 
 
 @router.get("/{article_id}", response_model=ArticleOut, summary="Get an article by ID")
-def get_article(
-    article_id: int,
-    db: Session = Depends(deps.get_db)
-):
+def get_article(article_id: int, db: Session = Depends(deps.get_db)):
     """
     Retrieve a single article by its ID.
 
@@ -59,11 +53,7 @@ def get_article(
 
 
 @router.put("/{article_id}", response_model=ArticleOut, summary="Update an article")
-def update_article(
-    article_id: int,
-    payload: ArticleUpdate,
-    db: Session = Depends(deps.get_db)
-):
+def update_article(article_id: int, payload: ArticleUpdate, db: Session = Depends(deps.get_db)):
     """
     Update an existing article by ID.
 
@@ -85,32 +75,37 @@ def update_article(
     service = ArticleService(db)
     return service.update_article(article_id, payload)
 
-
-@router.delete("/{article_id}", status_code=status.HTTP_204_NO_CONTENT, summary="Delete an article")
-def delete_article(
-    article_id: int,
+@router.get("/search", response_model=List[ArticleOut], summary="Search articles")
+def search_articles(
+    q: str = Query(..., min_length=2, description="Text to search in title or body"),
     db: Session = Depends(deps.get_db)
 ):
     """
-    Delete an article by ID.
+    PLUS: Basic article search endpoint.
 
-    This endpoint:
-      - Removes the article from the database.
-      - Invalidates the related cache entry in Redis.
+    Performs a case-insensitive search (`ILIKE`) in both the `title` and `body`
+    fields of the articles.
 
     Args:
-        article_id (int): Unique identifier of the article to delete.
-        db (Session): SQLAlchemy database session dependency.
+        q (str): The text query to search for.
+        db (Session): The database session dependency.
 
     Returns:
-        Response: HTTP 204 No Content on successful deletion.
+        List[ArticleOut]: A list of articles matching the search query.
 
     Raises:
-        HTTPException: If the article does not exist.
+        HTTPException: If no articles match the given search query.
     """
-    service = ArticleService(db)
-    service.delete_article(article_id)
-    return Response(status_code=status.HTTP_204_NO_CONTENT)
+    repo = ArticleRepository()
+    results = db.query(repo.model).filter(
+        (repo.model.title.ilike(f"%{q}%")) | (repo.model.body.ilike(f"%{q}%"))
+    ).all()
+
+    if not results:
+        raise HTTPException(status_code=404, detail="No articles found matching the query.")
+
+    return results
+
 
 
 @router.get("/", response_model=List[ArticleOut], summary="List all articles")
@@ -145,4 +140,27 @@ def list_articles(
     articles, _ = repo.list(
         db, skip=skip, limit=limit, tag=tag, author=author, sort_order=sort_order
     )
-    return articles
+    return articles or []  # nunca lanzar 404, devuelve lista vacía si no hay artículos
+
+@router.delete("/{article_id}", status_code=status.HTTP_204_NO_CONTENT, summary="Delete an article")
+def delete_article(article_id: int, db: Session = Depends(deps.get_db)):
+    """
+    Delete an article by ID.
+
+    This endpoint:
+      - Removes the article from the database.
+      - Invalidates the related cache entry in Redis.
+
+    Args:
+        article_id (int): Unique identifier of the article to delete.
+        db (Session): SQLAlchemy database session dependency.
+
+    Returns:
+        Response: HTTP 204 No Content on successful deletion.
+
+    Raises:
+        HTTPException: If the article does not exist.
+    """
+    service = ArticleService(db)
+    service.delete_article(article_id)
+    return Response(status_code=status.HTTP_204_NO_CONTENT)

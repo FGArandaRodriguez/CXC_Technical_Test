@@ -1,5 +1,6 @@
 import os
 from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic import ValidationError
 
 class Settings(BaseSettings):
     """
@@ -26,17 +27,47 @@ class Settings(BaseSettings):
         across the application.
 
     """
-    
-    model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
-
     APP_NAME: str = "Article Management Service"
     API_V1_STR: str = "/api/v1"
 
-    DATABASE_URL: str = os.getenv("DATABASE_URL", "postgresql+psycopg2://user:password@db:5432/articlesdb")
-
-    REDIS_URL: str = os.getenv("REDIS_URL", "redis://redis:6379/0")
-
-    API_KEY: str | None = os.getenv("API_KEY")
+    DATABASE_URL: str
+    API_KEY: str | None = None
     CACHE_TTL_SECONDS: int = 120
+    POSTGRES_DB: str
+    POSTGRES_USER: str
+    POSTGRES_PASSWORD: str
+    POSTGRES_HOST: str = "db"
+    POSTGRES_PORT: int = 5432
+    API_PORT: int = 8000
+    RATE_LIMIT_WINDOW: int = 60
+    RATE_LIMIT_MAX_REQUESTS: int = 20
+    REDIS_HOST : str = (os.getenv("REDIS_HOST", "redis"))
+    REDIS_PORT: int = (os.getenv("REDIS_PORT", 6379))
+    REDIS_DB: int = (os.getenv("REDIS_DB", 0))
+    REDIS_URL: str = (os.getenv("REDIS_URL")) or str(f"redis://{REDIS_HOST}:{REDIS_PORT}/{REDIS_DB}")
+
+    model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")  
     
-settings = Settings()
+    @property
+    def DATABASE_URL(self):
+        return (
+            f"postgresql+psycopg2://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}"
+            f"@{self.POSTGRES_HOST}:{self.POSTGRES_PORT}/{self.POSTGRES_DB}"
+        )
+
+    # @property
+    # def REDIS_URL(self):
+    #     return f"redis://{self.REDIS_HOST}:{self.REDIS_PORT}/{self.REDIS_DB}"
+    
+    
+    def __init__(self, **values):
+        super().__init__(**values)
+        # Construir URL automáticamente si no está definida
+        if not self.REDIS_URL:
+            self.REDIS_URL = f"redis://{self.REDIS_HOST}:{self.REDIS_PORT}/{self.REDIS_DB}"
+
+try:
+    settings = Settings()
+except ValidationError as e:
+    print("Missing required environment variables:\n", e)
+    raise SystemExit(1)

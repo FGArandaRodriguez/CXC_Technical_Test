@@ -23,6 +23,8 @@ class ArticleRepository:
             business and presentation layers.
 
     """
+    
+    model = Article
     def _tags_to_string(self, tags: Optional[List[str]]) -> Optional[str]:
         return ";".join(tags) if tags else None
 
@@ -39,17 +41,36 @@ class ArticleRepository:
         limit: int = 20,
         tag: Optional[str] = None,
         author: Optional[str] = None,
-        order_by: str = "published_at",
+        search: Optional[str] = None,
         sort_order: str = "desc"
     ) -> Tuple[List[Article], int]:
+        """Lista artículos con filtros, paginación, búsqueda opcional y ordenamiento."""
+        
+        # --- AÑADE ESTA LÍNEA DE DEPURACIÓN ---
+        print(f"🔍 Repositorio recibió el parámetro de búsqueda: '{search}'")
+
         query = db.query(Article)
 
         if author:
             query = query.filter(Article.author == author)
         if tag:
             query = query.filter(Article.tags.ilike(f"%{tag}%"))
+        
+        if search:
+            print("✅ Aplicando filtro de búsqueda...")
+            search_query = f"%{search}%"
+            query = query.filter(
+                (Article.title.ilike(search_query)) | (Article.body.ilike(search_query))
+            )
 
-        order_column = getattr(Article, order_by, Article.published_at)
+        # --- AÑADE ESTAS LÍNEAS PARA VER EL SQL ---
+        # Compila y muestra la consulta SQL exacta que se va a ejecutar
+        compiled_query = query.compile(dialect=postgresql.dialect(), compile_kwargs={"literal_binds": True})
+        print("--- 📜 SQL Generado ---")
+        print(compiled_query)
+        print("----------------------")
+
+        order_column = Article.published_at
         if sort_order == "asc":
             query = query.order_by(order_column.asc())
         else:

@@ -28,6 +28,7 @@ class ArticleService:
         self.db = db
         self.repo = ArticleRepository()
         self.cache = CacheWrapper()
+        
 
     def get_article(self, article_id: int) -> ArticleOut:
         cached_article = self.cache.get(article_id)
