@@ -123,9 +123,6 @@ CACHE_TTL=120
 docker-compose up --build
 ```
 
-Perfecto 👌 A continuación te dejo la **versión actualizada y profesional** del fragmento de documentación donde se explica claramente —como lo haría un **Senior Backend Engineer / Software Engineer III**— que **Docker y Docker Compose se encargan automáticamente de las migraciones con Alembic** al levantar el entorno.
-
-Puedes insertar esta sección directamente dentro del apartado **“Guía de instalación”** del README:
 
 ---
 
@@ -243,7 +240,7 @@ Salida esperada:
 | `GET`    | `/articles/search?q=` | Busca por texto en `title` o `body` (ILIKE)                                            | ✅             | ❌     |
 | `GET`    | `/openapi.json`       | Exporta la especificación OpenAPI                                                      | ❌             | ❌     |
 
-### 🔐 Ejemplo de autenticación
+### Ejemplo de autenticación
 
 Cada request requiere incluir el header:
 
@@ -313,7 +310,7 @@ Incluye:
 
 ---
 
-## 💡 **Notas técnicas adicionales**
+##  **Notas técnicas adicionales**
 
 * **Caché:**
 
@@ -357,7 +354,7 @@ Endpoints:
 
 ---
 
-## 👨‍💻 **Autor**
+##  **Autor**
 
 **Giovanni Aranda**
 Senior Backend Engineer
