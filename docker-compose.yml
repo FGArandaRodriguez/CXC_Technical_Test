@@ -1,33 +1,53 @@
-version: "3.8"
+version: "3.9"
 
 services:
-  # API Service
   api:
     build: .
     ports:
       - "8000:8000"
-    volumes:
-      - .:/app
-    env_file:
-      - .env
+    environment:
+      POSTGRES_DB: "articlesdb"
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "postgres"
+      POSTGRES_HOST: "db"
+      POSTGRES_PORT: 5432
+      REDIS_HOST: "redis"
+      REDIS_PORT: 6379
+      REDIS_DB: 0
+      API_KEY: "e4f1c2d3b6a9f08c7d5e3b2a1c9f0e8d4b6c3a2f1e9d0c7b5a4f3e2d1c0b9a8"
+      CACHE_TTL_SECONDS: 120
+      API_PORT: 8000
     depends_on:
-      - db
-      - redis
-    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+      db:
+        condition: service_started
+      redis:
+        condition: service_started
 
-  # PostgreSQL Database Service
   db:
     image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "postgres"
+      POSTGRES_DB: "articlesdb"
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
     volumes:
       - postgres_data:/var/lib/postgresql/data/
-    ports:
-      - "5433:5432"
-    env_file:
-      - .env
 
-  # Redis Cache Service
   redis:
     image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
 volumes:
   postgres_data:

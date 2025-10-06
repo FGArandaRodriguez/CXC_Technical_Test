@@ -1,0 +1,106 @@
+{
+  "info": {
+    "name": "CXC Technical Test - Article Management",
+    "_postman_id": "a8f7a2e4-ff25-44d8-9040-f5bca09f6b5a",
+    "description": "Colección de endpoints para el servicio de gestión de artículos (FastAPI + PostgreSQL + Redis).",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "🩺 Health",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "x-api-key", "value": "{{api_key}}" }
+        ],
+        "url": { "raw": "{{base_url}}/health", "host": ["{{base_url}}"], "path": ["health"] }
+      }
+    },
+    {
+      "name": "📰 Articles - Create",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "x-api-key", "value": "{{api_key}}" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"Artículo de ejemplo\",\n  \"body\": \"Este es el contenido del artículo.\",\n  \"author\": \"Pedro\",\n  \"tags\": [\"python\", \"fastapi\"],\n  \"published_at\": \"2025-10-06T00:00:00Z\"\n}"
+        },
+        "url": { "raw": "{{base_url}}/api/v1/articles/", "host": ["{{base_url}}"], "path": ["api", "v1", "articles", ""] }
+      }
+    },
+    {
+      "name": "📰 Articles - List",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "x-api-key", "value": "{{api_key}}" }],
+        "url": {
+          "raw": "{{base_url}}/api/v1/articles?skip=0&limit=10",
+          "host": ["{{base_url}}"],
+          "path": ["api", "v1", "articles"],
+          "query": [
+            { "key": "skip", "value": "0" },
+            { "key": "limit", "value": "10" }
+          ]
+        }
+      }
+    },
+    {
+      "name": "📰 Articles - Get by ID",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "x-api-key", "value": "{{api_key}}" }],
+        "url": { "raw": "{{base_url}}/api/v1/articles/{{article_id}}", "host": ["{{base_url}}"], "path": ["api", "v1", "articles", "{{article_id}}"] }
+      }
+    },
+    {
+      "name": "📰 Articles - Update",
+      "request": {
+        "method": "PUT",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "x-api-key", "value": "{{api_key}}" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"Título actualizado\",\n  \"body\": \"Contenido actualizado.\"\n}"
+        },
+        "url": { "raw": "{{base_url}}/api/v1/articles/{{article_id}}", "host": ["{{base_url}}"], "path": ["api", "v1", "articles", "{{article_id}}"] }
+      }
+    },
+    {
+      "name": "📰 Articles - Delete",
+      "request": {
+        "method": "DELETE",
+        "header": [{ "key": "x-api-key", "value": "{{api_key}}" }],
+        "url": { "raw": "{{base_url}}/api/v1/articles/{{article_id}}", "host": ["{{base_url}}"], "path": ["api", "v1", "articles", "{{article_id}}"] }
+      }
+    },
+    {
+      "name": "🔍 Articles - Search",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "x-api-key", "value": "{{api_key}}" }],
+        "url": {
+          "raw": "{{base_url}}/api/v1/articles/search?q=artículo",
+          "host": ["{{base_url}}"],
+          "path": ["api", "v1", "articles", "search"],
+          "query": [{ "key": "q", "value": "artículo" }]
+        }
+      }
+    },
+    {
+      "name": "📘 OpenAPI JSON",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "x-api-key", "value": "{{api_key}}" }],
+        "url": { "raw": "{{base_url}}/api/v1/openapi.json", "host": ["{{base_url}}"], "path": ["api", "v1", "openapi.json"] }
+      }
+    }
+  ],
+  "event": []
+}
+
+
